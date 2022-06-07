@@ -1,0 +1,804 @@
+---
+title: "Estructura de los indicadores compuestos"
+output:
+  html_notebook: default
+  word_document: default
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+## En este Notebook, se va a realizar una exploración de los datasets utilizados durante el TFM, conocidos cómo, Indicadores NODS. De estas lineas de codigo se extraera la estructura de cada dataset.
+
+1. Cada dataset sera cargado de los excell previamente preparados según el procedimiento ya explicado. La dirección de alojamiento es: "C:\Users\Propioetario\Desktop\TFM\Bases de Datos Excell\Indicadores compuestos\Indices compuestos\Indices Compuestos Definitivo".
+.
+
+```{r}
+library(summarytools)
+library(ggplot2)
+library(gmodels)
+library(DataExplorer)
+library(tidyverse)
+library(corrplot)
+library(nortest)
+library(caret)
+library(car)
+```
+
+```{r}
+getwd()
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+require("knitr")
+opts_knit$set(root.dir = "C:/Users/Propioetario/Desktop/TFM/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo")
+```
+
+```{r}
+IEPI <- read.csv2("C:/Users/Propioetario/Desktop/TFM/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo/EPI - Environmental Performance Index.csv", sep = ";", header = TRUE)
+```
+
+```{r}
+IEFP <- read.csv2("C:/Users/Propioetario/Desktop/TFM/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo/EFP - Ecological Footprint.csv", sep = ";", header = TRUE)
+```
+
+```{r}
+IGDP <- read.csv2("C:/Users/Propioetario/Desktop/TFM/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo/GDP - Gross Domestic Product.csv", sep = ";", header = TRUE)
+```
+
+```{r}
+#IGHGE <- read.csv2("C:/Users/Propioetario/Desktop/TFM/Bases de Datos Excell/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo/GHGE - Global Greenhouse Emisions.csv", sep = ";", header = TRUE)
+```
+
+```{r}
+#IGHI <- read.csv2("C:/Users/Propioetario/Desktop/TFM/Bases de Datos Excell/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo/GHI - Global Hunger Index.csv", sep = ";", header = TRUE)
+```
+
+```{r}
+IGPI <- read.csv2("C:/Users/Propioetario/Desktop/TFM/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo/GPI - Global Peace Index.csv", sep = ";", header = TRUE)
+```
+
+```{r}
+IGSCI <- read.csv2("C:/Users/Propioetario/Desktop/TFM/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo/GSCI - Global Sustainability Competitiveness Index.csv", sep = ";", header = TRUE)
+```
+
+```{r}
+IHDI <- read.csv2("C:/Users/Propioetario/Desktop/TFM/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo/HDI - Human Development Index.csv", sep = ";", header = TRUE)
+```
+
+```{r}
+IHFI <- read.csv2("C:/Users/Propioetario/Desktop/TFM/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo/HFI - Human Freedom Index.csv", sep = ";", header = TRUE)
+```
+
+```{r}
+ISPI <- read.csv2("C:/Users/Propioetario/Desktop/TFM/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo/SPI - Social Progress Index.csv", sep = ";", header = TRUE)
+```
+
+```{r}
+IWRI <- read.csv2("C:/Users/Propioetario/Desktop/TFM/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo/WRI - World Risk Index.csv", sep = ";", header = TRUE)
+```
+
+```{r}
+#IWHRRH <- read.csv2("C:/Users/Propioetario/Desktop/TFM/Bases de Datos Excell/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo/WHRRH - World Happines Report Ranking of Happines.csv", sep = ";", header = TRUE)
+```
+
+```{r}
+#IGII <- read.csv2("C:/Users/Propioetario/Desktop/TFM/Bases de Datos Excell/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo/GII - Global Innovation_Index.csv", sep = ";", header = TRUE)
+```
+
+
+# EFP - Ecological Footprint 
+
+```{r}
+sapply(list(IEPI, IEFP, IGDP, IGPI, IGSCI,IHDI, IHFI, ISPI, IWRI), head, n=5)
+```
+
+```{r}
+sapply(list(IEPI, IEFP, IGDP,IGPI, IGSCI,IHDI, IHFI, ISPI, IWRI), colnames)
+```
+
+# EPI - Enviromental Performance Index
+
+```{r}
+head(IEPI, 5)
+```
+
+```{r}
+glimpse(IEPI)
+```
+
+# GDP - Gross Domestic Product
+
+```{r}
+head(IGDP,5)
+```
+
+```{r}
+glimpse(IGDP)
+```
+
+# HFI - Human Freedom Index
+
+```{r}
+head(IHFI,5)
+```
+
+```{r}
+glimpse(IHFI)
+```
+
+# HDI - Human Development Index
+
+```{r}
+head(IHDI)
+```
+
+```{r}
+glimpse(IHDI)
+```
+
+# SPI - Social Progress Index
+
+```{r}
+head(ISPI,5)
+```
+
+```{r}
+glimpse(ISPI)
+```
+
+# WRI - World Risk Index
+
+```{r}
+head(IWRI)
+```
+
+```{r}
+glimpse(IWRI)
+```
+
+A continuación nos dispondremos a unir todos los datasets de Indicadores_NODS en un solo dataset, para posteriormente poder hacer un EDA, que nos ayude a responder las hipótesis planteadas.
+
+1. Antes, se harán una serie de modificaciones en los diferentes datasets, concretamente:
+- GPI - Renombrar columnas, y dejar valores para el año 2019
+- GSCI - Elegir solo los valores para el indice y año 2019
+- HDI - Renombrar columnas, y dejar valores para el año 2019
+- SPI - Elegir solo los valores para el indice y año 2019
+- WHI - Elegir solo los valores para el indice y año 2019
+- WRI - Elegir solo los valores para el indice y año 2019
+
+El motivo de esto, es que para la hipótesis que se quiere demostrar no es necesario nada mas que el valor de los indices compuestos elegidos para el año 2019. La razón por la cual se ha elegido el año 2019, tiene que ver con que es el ultimo año antes de la pandemia COVID19. 
+
+# EFP
+
+```{r}
+names(IEFP) [5] = "EFP"
+names(IEFP)
+glimpse(IEFP)
+IEFP <- select(IEFP, "COUNTRY", "ISO3", "REGION", "POPULATION","EFP")
+head(IEFP,5)
+```
+
+
+# GPI
+
+```{r}
+names(IGPI) [5] = "GPI"
+names(IGPI)
+glimpse(IGPI)
+IGPI <- select(IGPI, "COUNTRY", "ISO3", "REGION", "POPULATION","GPI")
+head(IGPI,5)
+```
+
+# GSCI
+
+```{r}
+names (IGSCI)
+IGSCI <- select(IGSCI, "COUNTRY", "ISO3", "REGION", "POPULATION", "GSCI")
+head (IGSCI,5)
+```
+
+# HFI
+
+```{r}
+names (IHFI)
+IHFI <- select(IHFI,"COUNTRY", "ISO3", "REGION", "POPULATION", "HFI" )
+```
+
+
+# HDI
+
+```{r}
+names (IHDI) [8] = "HDI"
+glimpse(IHDI)
+IHDI <- select(IHDI, "COUNTRY", "ISO3", "REGION", "POPULATION", "HDI")
+head(IHDI, 5)
+```
+
+#SPI
+
+```{r}
+names(ISPI) [5] = "SPI"
+names(ISPI)
+ISPI <- select(ISPI, "COUNTRY", "ISO3", "REGION", "POPULATION","SPI")
+head(ISPI,5)
+```
+
+#WRI
+
+```{r}
+names (IWRI) [8] = "WRI"
+names (IWRI)
+IWRI <- select(IWRI, "COUNTRY", "ISO3","REGION", "POPULATION", "WRI")
+head (IWRI,5)
+```
+
+
+```{r}
+INODS_list <- list(IEPI, IEFP, IGDP, IGPI, IGSCI, IHDI, IHFI, ISPI, IWRI)
+INODS <- INODS_list %>% reduce(inner_join, by = c("COUNTRY", "ISO3", "REGION", "POPULATION"))
+head (INODS,5)
+INODS
+```
+
+```{r}
+names(INODS) [6] = "EFP"
+names(INODS) [7] = "GDP"
+INODS
+```
+
+
+Ya se ha conseguido el dataset con el que se va a trabajar, de nombre INODS. Para tener una estructura lo mas homogenea posible que facilitará el trabajo en el futuro, se va a cambiar el nombre de las siguientes 3 columnas.
+
+- Total Ecological Footprint
+- Total Biocapacity 
+- GDP PER CAPITA por GDP
+
+- Además, para el análisis exploratorio será necesario tener todas las columnas en caracter numerico.
+
+```{r}
+sapply(INODS, class)
+cols.num <- c("EPI", "EFP", "GPI", "HDI", "HFI", "SPI","WRI")
+INODS[cols.num] <- sapply(INODS[cols.num], as.numeric)
+sapply(INODS, class)
+```
+
+- Una vez con las columnas en carácter numérico, procedemos a hacer el analísis exploratorio.
+
+```{r}
+INODS
+```
+- Se ve la estructura del dataframe
+
+```{r}
+summary(INODS)
+```
+
+```{r}
+str(INODS)
+```
+
+- Se comprueba el porcentaje de nulos
+
+```{r}
+plot_missing(INODS)
+```
+
+- Como se puede comprobar el número de nulos es asumible, y por tanto se deciden eliminar para proseguir en el análisis.
+
+
+- Como se puede observar en los tres casos mencionados, el número de nulos supera los 120 paises.
+```{r}
+output <- vector("double", ncol(INODS))
+for (i in seq_along(INODS)){
+  output[[i]] <- sum(is.na(INODS[[i]]))
+}
+output
+```
+
+- Se quitan los indices mencionados del dataset
+
+```{r}
+sum(INODS$POPULATION)
+```
+
+- Se omiten los nulos del dataset, y obtenemos un dataset sin nulos, que va a permitir responder a algunas preguntas.
+
+```{r}
+INODS <- na.omit(INODS)
+```
+
+
+```{r}
+sum(INODS$POPULATION)
+```
+
+```{r}
+7764062616 - 6817280892
+```
+
+
+- Se halla la medía de cada indicador NODS
+
+```{r}
+round(colMeans(INODS[sapply(INODS, is.numeric)]),2)
+```
+
+```{r}
+valores <- INODS %>% dplyr::select("EFP", "EPI", "GDP", "GPI", "GSCI", "HDI", "HFI", "SPI", "WRI")
+
+sapply(valores, function(x) round(t.test((x), conf.level = 0.95)$p.value,2))
+```
+
+```{r}
+ggplot(INODS) +
+   geom_histogram(mapping = aes(EPI, fill = REGION), binwidth = 0.01) +
+   ggtitle("Indice de Desarrollo Humano por Región") +
+   labs(x = "Indice Desarrollo Humano", fill = "Regiones", y = "Paises por Región")
+```
+
+
+```{r}
+for (columna in 4:ncol(INODS)){
+  if (class(INODS[,columna]) == "factor"){
+    # Por defecto se mostrará un gráfico de barras.
+    plot(INODS[,columna], 
+         col = rainbow(length(levels(INODS[,columna]))),
+         las = 1,
+         main = paste("Diagrama de barras de: ", colnames(INODS[columna])))
+  } else {
+    # Para las variables numéricas, histograma.
+    hist(INODS[, columna], 
+         border = "black", 
+         col = "red",
+            las = 1, 
+         main = paste("Histograma de: ", colnames(INODS[columna])),
+         xlab  = colnames(INODS[columna]))
+  }
+}
+ 
+```
+
+```{r}
+for (columna in 5:ncol(INODS)){
+  if (class(INODS[,columna]) != "factor"){
+    plot(density(INODS[, columna]), 
+         col = "orange", 
+         las = 1,
+         main = paste("Distribucion: ", colnames(INODS[columna])),
+         xlab  = colnames(INODS[columna]))
+  }
+}  
+```
+
+- Se crea una función para conocer 
+
+```{r}
+histDenNorm <- function (x, ...) {
+   hist(x, ...) # Histograma
+   lines(density(x), col = "blue", lwd = 2) # Densidad
+   x2 <- seq(min(x), max(x), length = 172)
+   f <- dnorm(x2, mean(x), sd(x))
+   lines(x2, f, col = "red", lwd = 2) # Normal
+   legend("topright", c("Densidad", "Normal"), box.lty = 0,
+          lty = 1, col = c("blue","red"), lwd = c(2, 2))
+}
+```
+
+
+- Se aplica la función a cada uno de los indices compuestos
+
+```{r}
+par(mfrow =c(1,1))
+
+for (columna in 4:ncol(INODS)){
+    histDenNorm (INODS[, columna], 
+         prob = TRUE,
+         las = 2,
+         main = paste("Histograma de los indicadores NODS: ", colnames(INODS[columna])),
+         xlab  = colnames(INODS[columna]))
+  }
+```
+
+- Hacemos el test 
+```{r}
+valores <- INODS %>% dplyr::select("EFP", "EPI", "GDP", "GPI", "GSCI", "HDI", "HFI", "SPI", "WRI")
+
+sapply(valores, function(x) round(shapiro.test(x)$p.value,3))
+```
+
+
+```{r}
+par(mfrow =c(1,1))
+
+for (columna in 4:ncol(INODS)){
+    boxplot(INODS[, columna], 
+         prob = TRUE,
+         las = 2,
+         col = "blue",
+         main = paste("Boxplot de los indicadores NODS: ", colnames(INODS[columna])),
+         xlab  = colnames(INODS[columna]))
+}
+```
+
+```{r}
+g_caja<-boxplot(INODS$EFP, col="skyblue", frame.plot=F)
+```
+
+```{r}
+g_caja$out
+```
+
+```{r}
+INODS[INODS$EFP > 10,]
+```
+
+```{r}
+INODS_QATAR <- INODS[!(INODS$COUNTRY == "Qatar"),]
+```
+
+
+```{r}
+INODS.cor <- INODS %>% dplyr:: select("POPULATION", "EPI", "EFP", "GDP", "GPI", "GSCI", "HDI", "HFI", "SPI", "WRI")
+mat.INODS.cor <- cor(INODS.cor, method = "pearson")
+round(mat.INODS.cor, 6)
+```
+
+```{r}
+INODS.cor1 <- INODS %>% dplyr:: select("POPULATION", "EPI", "EFP", "GDP", "GPI", "GSCI",  "HDI", "HFI", "SPI", "WRI")
+mat.INODS.cor1 <- cor(INODS.cor, method = "spearman")
+round(mat.INODS.cor, 6)
+```
+
+
+```{r}
+corrplot(mat.INODS.cor, tl.srt = 50, method = "number", addshade = "all", type = "upper", title = "Correlacion de los Indices")
+```
+
+```{r}
+help(corrplot)
+```
+
+
+```{r}
+corrplot(mat.INODS.cor1, tl.srt = 55, method = "number", addshade = "all", type = "upper", title = "Correlacion de los Indices")
+```
+
+```{r}
+
+for (i in 4:ncol(INODS)){
+    print(ggplot(INODS, aes_string(x= "EPI", y = INODS[ , i])) +
+        geom_point(color = "red")+
+        labs(y = colnames(INODS[i])) +
+        stat_smooth(color = "blue"))
+}
+```
+
+```{r}
+for (i in 4:ncol(INODS)){
+    print(ggplot(INODS, aes_string(x= "EFP", y = INODS[ , i])) +
+        geom_point(color = "red")+
+        labs(y = colnames(INODS[i])) +
+        stat_smooth(color = "blue"))
+}
+```
+
+```{r}
+for (i in 4:ncol(INODS)){
+    print(ggplot(INODS, aes_string(x= "GDP", y = INODS[ , i])) +
+        geom_point(color = "red")+
+        labs(y = colnames(INODS[i])) +
+        stat_smooth(color = "blue"))
+}
+```
+
+```{r}
+for (i in 4:ncol(INODS)){
+    print(ggplot(INODS, aes_string(x= "GPI", y = INODS[ , i])) +
+        geom_point(color = "red")+
+        labs(y = colnames(INODS[i])) +
+        stat_smooth(color = "blue"))
+}
+```
+
+```{r}
+for (i in 4:ncol(INODS)){
+    print(ggplot(INODS, aes_string(x= "GSCI", y = INODS[ , i])) +
+        geom_point(color = "red")+
+        labs(y = colnames(INODS[i])) +
+        stat_smooth(color = "blue"))
+}
+```
+
+```{r}
+for (i in 4:ncol(INODS)){
+    print(ggplot(INODS, aes_string(x= "HDI", y = INODS[ , i])) +
+        geom_point(color = "red")+
+        labs(y = colnames(INODS[i])) +
+        stat_smooth(color = "blue"))
+}
+```
+
+```{r}
+for (i in 4:ncol(INODS)){
+    print(ggplot(INODS, aes_string(x= "HFI", y = INODS[ , i])) +
+        geom_point(color = "red")+
+        labs(y = colnames(INODS[i])) +
+        stat_smooth(color = "blue"))
+}
+```
+
+```{r}
+for (i in 4:ncol(INODS)){
+    print(ggplot(INODS, aes_string(x= "SPI", y = INODS[ , i])) +
+        geom_point(color = "red")+
+        labs(y = colnames(INODS[i])) +
+        stat_smooth(color = "blue"))
+}
+```
+
+```{r}
+for (i in 4:ncol(INODS)){
+    print(ggplot(INODS, aes_string(x= "WRI", y = INODS[ , i])) +
+        geom_point(color = "red")+
+        labs(y = colnames(INODS[i])) +
+        stat_smooth(color = "blue"))
+}
+```
+
+# Normalizar variables y mirar la relación lineal
+
+```{r}
+EPI_NORM <- scale(INODS$EPI, center = T, scale = T)
+EFP_NORM <- scale(INODS$EFP, center = T, scale = T)
+GDP_NORM <- scale(INODS$GDP, center = T, scale = T)
+GPI_NORM <- scale(INODS$GPI, center = T, scale = T)
+GSCI_NORM <- scale(INODS$GSCI, center = T, scale = T)
+HDI_NORM <- scale(INODS$HDI, center = T, scale = T)
+HFI_NORM <- scale(INODS$HFI, center = T, scale = T)
+SPI_NORM <- scale(INODS$SPI, center = T, scale = T)
+WRI_NORM <- scale(INODS$WRI, center = T, scale = T)
+
+INODS_NORM <- data.frame(EPI_NORM, EFP_NORM,GDP_NORM, GPI_NORM,GSCI_NORM, HDI_NORM,HFI_NORM, SPI_NORM, WRI_NORM)
+```
+
+```{r}
+
+EPI_NORM_ <- scale(INODS_QATAR$EPI, center = T, scale = T)
+EFP_NORM_ <- scale(INODS_QATAR$EFP, center = T, scale = T)
+GDP_NORM_ <- scale(INODS_QATAR$GDP, center = T, scale = T)
+GPI_NORM_ <- scale(INODS_QATAR$GPI, center = T, scale = T)
+GSCI_NORM_ <- scale(INODS_QATAR$GSCI, center = T, scale = T)
+HDI_NORM_ <- scale(INODS_QATAR$HDI, center = T, scale = T)
+HFI_NORM_ <- scale(INODS_QATAR$HFI, center = T, scale = T)
+SPI_NORM_ <- scale(INODS_QATAR$SPI, center = T, scale = T)
+WRI_NORM_ <- scale(INODS_QATAR$WRI, center = T, scale = T)
+
+INODS_NORM_Q <- data.frame(EPI_NORM_, EFP_NORM_,GDP_NORM_, GPI_NORM_,GSCI_NORM_, HDI_NORM_,HFI_NORM_, SPI_NORM_, WRI_NORM_)
+```
+
+
+```{r}
+for (i in 1:ncol(INODS_NORM)){
+    print(ggplot(INODS_NORM, aes_string(x= "EPI_NORM", y = INODS_NORM[ , i])) +
+        geom_point(color = "green")+
+        labs(y = colnames(INODS_NORM[i])) +
+        stat_smooth(color = "blue"))
+}
+```
+
+
+```{r}
+par(mfrow =c(2,3))
+
+plot(EPI_NORM , HDI_NORM, main = "Relación Lineal", col = "orange", ylab = "Indice de Desarrollo Humano", xlab= "Indice de desempeño ambiental")
+abline(lm(EPI_NORM~HDI_NORM))
+
+plot(EPI_NORM, GDP_NORM, main = "Relación Lineal", col = "blue", ylab = "Producto interior bruto", xlab= "Indice de desempeño ambiental")
+abline(lm(EPI_NORM~GDP_NORM))
+
+plot(EPI_NORM, EFP_NORM, main = "Relación Lineal", col = "green", ylab = "Huella Ecologica", xlab= "Indice de desempeño ambiental")
+abline(lm(EPI_NORM~EFP_NORM))
+
+plot(EPI_NORM, GSCI_NORM, main = "Relación Lineal", col = "green", ylab = "Global Sustainabilty Index", xlab= "Indice de desempeño ambiental")
+abline(lm(EPI_NORM~GSCI_NORM))
+
+plot(EPI_NORM, GPI_NORM, main = "Relación Lineal", col = "red", ylab = "Indice de Paz Global", xlab= "Indice de desempeño ambiental")
+abline(lm(EPI_NORM~GPI_NORM))
+
+plot(EPI_NORM, HFI_NORM, main = "Relación Lineal", col = "green", ylab = "Indice de Libertad Humana", xlab= "Indice de desempeño ambiental")
+abline(lm(EPI_NORM~HFI_NORM))
+
+plot(EPI_NORM, HFI_NORM, main = "Relación Lineal", col = "green", ylab = "Indice de Libertad Humana", xlab= "Indice de desempeño ambiental")
+abline(lm(EPI_NORM~HFI_NORM))
+       
+```
+
+```{r}
+par(mfrow =c(2,3))
+
+plot(EFP_NORM , HDI_NORM, main = "Relación Lineal", col = "orange", ylab = "Indice de Desarrollo Humano", xlab= "Huella Ecologica")
+abline(lm(EFP_NORM~HDI_NORM))
+
+plot(EFP_NORM, GDP_NORM, main = "Relación Lineal", col = "blue", ylab = "Producto interior bruto", xlab= "Huella Ecologica")
+abline(lm(EFP_NORM~GDP_NORM))
+
+plot(EFP_NORM, EPI_NORM, main = "Relación Lineal", col = "green", ylab = "Huella Ecologica", xlab= "Indice de desempeño ambiental")
+abline(lm(EFP_NORM~EPI_NORM))
+
+plot(EFP_NORM, GSCI_NORM, main = "Relación Lineal", col = "green", ylab = "Global Sustainabilty Index", xlab= "Indice de desempeño ambiental")
+abline(lm(EFP_NORM~GSCI_NORM))
+
+plot(EFP_NORM, GPI_NORM, main = "Relación Lineal", col = "red", ylab = "Indice de Paz Global", xlab= "Indice de desempeño ambiental")
+abline(lm(EFP_NORM~GPI_NORM))
+
+plot(EFP_NORM, HFI_NORM, main = "Relación Lineal", col = "green", ylab = "Indice de Libertad Humana", xlab= "Indice de desempeño ambiental")
+abline(lm(EFP_NORM~HFI_NORM))
+
+plot(EFP_NORM, WRI_NORM, main = "Relación Lineal", col = "green", ylab = "Indice de riesgo global", xlab= "Indice de desempeño ambiental")
+abline(lm(EFP_NORM~WRI_NORM))
+```
+
+
+```{r}
+par(mfrow =c(1,1))
+
+for (i in 1:ncol(INODS_NORM)){
+    print(ggplot(INODS_NORM, aes_string(x= "HDI_NORM", y = INODS_NORM[ , i])) +
+        geom_point(color = "orange")+
+        labs(y = colnames(INODS_NORM[i])) +
+        stat_smooth(color = "blue"))
+}
+```
+
+```{r}
+
+par(mfrow =c(1,3))
+
+for (i in 1:ncol(INODS_NORM)){
+    print(ggplot(INODS_NORM, aes_string(x= "SPI_NORM", y = INODS_NORM[ , i])) +
+        geom_point(color = "brown")+
+        labs(y = colnames(INODS_NORM[i])) +
+        stat_smooth(color = "blue"))
+}
+```
+
+```{r}
+par(mfrow =c(1,3))
+
+for (i in 1:ncol(INODS_NORM)){
+    print(ggplot(INODS_NORM, aes_string(x= "GDP_NORM", y = INODS_NORM[ , i])) +
+        geom_point(color = "red")+
+        labs(y = colnames(INODS_NORM[i])) +
+        stat_smooth(color = "blue"))
+}
+```
+
+```{r}
+par(mfrow =c(1,3))
+
+for (i in 1:ncol(INODS_NORM)){
+    print(ggplot(INODS_NORM, aes_string(x= "EFP_NORM", y = INODS_NORM[ , i])) +
+        geom_point(color = "red")+
+        labs(y = colnames(INODS_NORM[i])) +
+        stat_smooth(color = "blue"))
+}
+```
+
+```{r}
+par(mfrow =c(1,3))
+
+for (i in 1:ncol(INODS_NORM_Q)){
+    print(ggplot(INODS_NORM_Q, aes_string(x= "WRI_NORM_", y = INODS_NORM_Q[ , i])) +
+        geom_point(color = "red")+
+        labs(y = colnames(INODS_NORM_Q[i])) +
+        stat_smooth(color = "blue"))
+}
+```
+
+```{r}
+par(mfrow =c(1,3))
+
+for (i in 1:ncol(INODS_NORM_Q)){
+    print(ggplot(INODS_NORM_Q, aes_string(x= "GPI_NORM_", y = INODS_NORM_Q[ , i])) +
+        geom_point(color = "red")+
+        labs(y = colnames(INODS_NORM_Q[i])) +
+        stat_smooth(color = "blue"))
+}
+```
+
+
+```{r}
+mod_inicial_norm_EPI <- glm(EPI_NORM~ HDI_NORM + EFP_NORM + GSCI_NORM + GPI_NORM + WRI_NORM + SPI_NORM + GDP_NORM + HFI_NORM,
+                     data = INODS_NORM,
+                        family = gaussian)
+
+summary(mod_inicial_norm_EPI)
+```
+```{r}
+mod_final_norm_EPI <- glm(EPI_NORM~ SPI_NORM + GSCI_NORM + GDP_NORM,
+                     data = INODS_NORM,
+                        family = gaussian)
+
+summary(mod_final_norm_EPI)
+```
+
+```{r}
+mod_inicial_norm_HDI <- glm(HDI_NORM~ EPI_NORM + EFP_NORM+ GSCI_NORM + GPI_NORM + WRI_NORM + SPI_NORM + GDP_NORM + HFI_NORM,
+                     data = INODS_NORM,
+                        family = gaussian)
+
+summary(mod_inicial_norm_HDI)
+```
+
+```{r}
+mod_final_norm_HDI <- glm(HDI_NORM~ SPI_NORM + HFI_NORM + GDP_NORM + GPI_NORM,
+                     data = INODS_NORM,
+                        family = gaussian)
+
+summary(mod_final_norm_HDI)
+```
+
+```{r}
+mod_inicial_norm_SPI <- glm(SPI_NORM~ EPI_NORM + EFP_NORM + GSCI_NORM + GPI_NORM + WRI_NORM + HDI_NORM + GDP_NORM + HFI_NORM,
+                     data = INODS_NORM,
+                        family = gaussian)
+
+summary(mod_inicial_norm_SPI)
+```
+
+
+```{r}
+mod_final_norm_SPI <- glm(SPI_NORM~ HDI_NORM + HFI_NORM + GDP_NORM + EPI_NORM,
+                     data = INODS_NORM,
+                        family = gaussian)
+
+summary(mod_final_norm_SPI)
+```
+
+```{r}
+INODS_PCA <- select(INODS, "HDI", "EFP", "GPI", "WRI", "SPI", "EPI", "GSCI", "GDP", "HFI")
+```
+
+```{r}
+pca.INODS_NORM <- prcomp(INODS_NORM, scale= TRUE)
+summary(pca.INODS_NORM)
+plot(pca.INODS_NORM)
+```
+
+```{r}
+pca.INODS_PCA <- prcomp(INODS_PCA, scale= TRUE)
+summary(pca.INODS_PCA)
+plot(pca.INODS_PCA)
+```
+
+```{r}
+modelo_PCA <- princomp(INODS_NORM)
+```
+
+```{r}
+modelo_PCA2 <- princomp(INODS_PCA)
+```
+
+```{r}
+names(modelo_PCA)
+```
+
+```{r}
+round((modelo_PCA$center),18)
+```
+
+```{r}
+round((modelo_PCA$center),2)
+```
+
+```{r}
+pca.INODS_PCA$scale
+```
+
+
+```{r}
+head(modelo_PCA[order(modelo_PCA$score,decreasing = TRUE),],3)
+```
+

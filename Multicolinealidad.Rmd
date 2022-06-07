@@ -1,0 +1,214 @@
+---
+title: "Modelos Indicadores"
+author: "Victor Manuel Ferreira Martinez"
+date: "10/5/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(MASS)
+```
+
+```{r}
+help(lm)
+```
+
+
+```{r}
+modelo_EPI <- lm(EPI_NORM~., data = INODS_NORM)
+
+coef(modelo_EPI)
+
+predicciones_EPI <- modelo_EPI %>% predict(INODS_NORM)
+
+data.frame(RMSE = RMSE(predicciones, INODS_NORM$EPI_NORM), R2 = R2(predicciones,INODS_NORM$EPI_NORM ))
+
+car:: vif(modelo_EPI)
+```
+
+```{r}
+modelo_EFP <- lm(EFP_NORM~., data = INODS_NORM)
+
+coef(modelo_EFP)
+
+predicciones_EFP <- modelo_EFP %>% predict(INODS_NORM)
+
+data.frame(RMSE = RMSE(predicciones, INODS_NORM$EFP_NORM), R2 = R2(predicciones,INODS_NORM$EFP_NORM ))
+
+car:: vif(modelo_EFP)
+```
+
+
+```{r}
+modelo_GDP <- lm(GDP_NORM~., data = INODS_NORM)
+
+coef(modelo_GDP)
+
+predicciones_GDP <- modelo_GDP %>% predict(INODS_NORM)
+
+data.frame(RMSE = RMSE(predicciones, INODS_NORM$GDP_NORM), R2 = R2(predicciones,INODS_NORM$GDP_NORM ))
+
+car:: vif(modelo_GDP)
+```
+
+```{r}
+modelo_HDI <- lm(HDI_NORM~., data = INODS_NORM)
+
+coef(modelo_HDI)
+
+predicciones_HDI <- modelo_HDI %>% predict(INODS_NORM)
+
+data.frame(RMSE = RMSE(predicciones, INODS_NORM$HDI_NORM), R2 = R2(predicciones,INODS_NORM$HDI_NORM ))
+
+car:: vif(modelo_HDI)
+```
+
+```{r}
+modelo_SPI <- lm(SPI_NORM~., data = INODS_NORM)
+
+coef(modelo_SPI)
+
+predicciones_SPI <- modelo_SPI %>% predict(INODS_NORM)
+
+data.frame(RMSE = RMSE(predicciones, INODS_NORM$SPI_NORM), R2 = R2(predicciones,INODS_NORM$SPI_NORM ))
+
+car:: vif(modelo_SPI)
+```
+
+```{r}
+modelo_GPI <- lm(GPI_NORM~., data = INODS_NORM)
+
+coef(modelo_GPI)
+
+predicciones_GPI <- modelo_GPI %>% predict(INODS_NORM)
+
+data.frame(RMSE = RMSE(predicciones, INODS_NORM$GPI_NORM), R2 = R2(predicciones,INODS_NORM$GPI_NORM ))
+
+car:: vif(modelo_GPI)
+```
+```{r}
+modelo_GSCI <- lm(GSCI_NORM~., data = INODS_NORM)
+
+coef(modelo_GSCI)
+
+predicciones_GSCI <- modelo_GSCI %>% predict(INODS_NORM)
+
+data.frame(RMSE = RMSE(predicciones, INODS_NORM$GSCI_NORM), R2 = R2(predicciones,INODS_NORM$GSCI_NORM ))
+
+car:: vif(modelo_GSCI)
+```
+
+```{r}
+modelo_WRI <- lm(WRI_NORM~., data = INODS_NORM)
+
+coef(modelo_WRI)
+
+predicciones_WRI <- modelo_WRI %>% predict(INODS_NORM)
+
+data.frame(RMSE = RMSE(predicciones, INODS_NORM$WRI_NORM), R2 = R2(predicciones,INODS_NORM$WRI_NORM ))
+
+car:: vif(modelo_WRI)
+```
+
+```{r}
+modelo_HFI <- lm(HFI_NORM~., data = INODS_NORM)
+
+coef(modelo_HFI)
+
+predicciones_HFI <- modelo_HFI %>% predict(INODS_NORM)
+
+data.frame(RMSE = RMSE(predicciones, INODS_NORM$HFI_NORM), R2 = R2(predicciones,INODS_NORM$HFI_NORM ))
+
+car:: vif(modelo_HFI)
+```
+
+```{r}
+modelo_WRI <- lm(WRI_NORM~., data = INODS_NORM)
+
+coef(modelo_WRI)
+
+predicciones_WRI <- modelo_WRI %>% predict(INODS_NORM)
+
+data.frame(RMSE = RMSE(predicciones, INODS_NORM$WRI_NORM), R2 = R2(predicciones,INODS_NORM$WRI_NORM ))
+
+car:: vif(modelo_WRI)
+```
+
+```{r}
+round((modelo_PCA2$center),2)
+```
+
+```{r}
+round((modelo_PCA2$center),2)
+```
+
+```{r}
+biplot(x = modelo_PCA2, scale = 0, cex = 0.6, col = c("blue4", "brown3"))
+```
+
+```{r}
+round((modelo_PCA2$sdev^2),2)
+```
+
+
+```{r}
+prop_varianza <- modelo_PCA2$sdev^2 / sum(modelo_PCA2$sdev^2)
+```
+
+```{r}
+ggplot(data = data.frame(prop_varianza, pc = 1:9),
+       aes(x = pc, y = prop_varianza)) +
+  geom_col(width = 0.3) +
+  scale_y_continuous(limits = c(0,1)) +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. de varianza explicada")
+```
+```{r}
+prop_varianza_acum <- cumsum(prop_varianza)
+prop_varianza_acum
+```
+
+```{r}
+ggplot(data = data.frame(prop_varianza_acum, pc = 1:9),
+       aes(x = pc, y = prop_varianza_acum, group = 1)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. varianza explicada acumulada")
+```
+
+```{r}
+prop_varianza1 <- modelo_PCA2$sdev^2 / sum(modelo_PCA2$sdev^2)
+```
+
+```{r}
+ggplot(data = data.frame(prop_varianza1, pc = 1:9),
+       aes(x = pc, y = prop_varianza)) +
+  geom_col(width = 0.3) +
+  scale_y_continuous(limits = c(0,1)) +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. de varianza explicada")
+```
+
+```{r}
+prop_varianza_acum1 <- cumsum(prop_varianza1)
+prop_varianza_acum1
+```
+
+```{r}
+ggplot(data = data.frame(prop_varianza_acum, pc = 1:9),
+       aes(x = pc, y = prop_varianza_acum, group = 1)) +
+  geom_point() +
+  geom_line() +
+  theme_bw() +
+  labs(x = "Componente principal",
+       y = "Prop. varianza explicada acumulada")
+```
+

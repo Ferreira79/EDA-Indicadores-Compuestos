@@ -1,0 +1,130 @@
+---
+title: "Eda Indicadores_NODS"
+author: "Victor Manuel Ferreira Martinez"
+date: "19/4/2022"
+output:
+  word_document: default
+  html_document:
+    df_print: paged
+  pdf_document: default
+---
+##### Análisis exploratorio de los datos
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, error = TRUE)
+require("knitr")
+opts_knit$set(root.dir = "C:/Users/Propioetario/Desktop/TFM/Bases de Datos Excell/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo")
+```
+
+```{r}
+getwd()
+```
+
+
+```{r}
+setwd("C:/Users/Propioetario/Desktop/TFM/Bases de Datos Excell/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo")
+```
+
+
+```{r}
+NODS_ <- read.csv2("C:/Users/Propioetario/Desktop/TFM/Bases de Datos Excell/Indicadores compuestos/Indices compuestos/Indices Compuestos Definitivo/IND_NODS.csv", sep = ",", header = TRUE, quote = "\\\"")
+```
+
+
+```{r}
+library(summarytools)
+library(ggplot2)
+library(gmodels)
+library(DataExplorer)
+library(tidyverse)
+library(corrplot)
+library(nortest)
+library(MASS)
+library(caret)
+```
+
+
+```{r}
+head(NODS,5)
+```
+
+```{r}
+dim(NODS)
+summary(NODS)
+```
+
+Se cambia los valores a numéricos de la columna GHI, antes de continuar
+
+```{r}
+NODS <- transform(NODS, GHI = as.numeric(GHI))
+NODS
+```
+Aquí se puede ver el número de nulos que existe en el dataframe.
+
+```{r}
+plot_missing(NODS)
+```
+
+- A través de un bucle se halla el número de nulos por indice, para ver cuantos paises no cuentan con valor. Esto puede hacer tomar la decisión de eliminar algún indice para nuestro análisis
+
+```{r}
+output <- vector("double", ncol(NODS))
+for (i in seq_along(NODS)){
+  output[[i]] <- sum(is.na(NODS[[i]]))
+}
+output
+```
+
+```{r}
+plot_missing(NODS_WITH_NULL)
+```
+
+- El principal problema con el que cuentan los indicadores compuestos, es la falta de datos para todos los paises. Una ventaja sería contar con datos para los 193 paises de la ONU. 
+
+- Es cierto que la base de datos utilizada para este análisis, cuenta con 251 paises, fruto del intento de estandarización para posteriores actuaciones, y que suelen ser los mismos paises para los que no existen datos, sin embargo para alguno de los indices elegidos después de la búsqueda sistemática que se ha realizado, el número de valores faltantes es muy elevado, y si se procede a omitir todos los valores nulos como se ve a continuación, el dataframe queda muy reducido. Concretamente a 44 valores. 
+
+```{r}
+NODS_WITH_NULL <- na.omit(NODS)
+NODS_WITH_NULL
+```
+- Tras analizar el numero de nulos por indice, 
+
+```{r}
+NODS$GHI <- NULL
+NODS$WHI <- NULL
+NODS$GII <- NULL
+```
+
+```{r}
+na.omit(NODS)
+```
+
+```{r}
+for (columna in 4:ncol(NODS)){
+  if (class(NODS[,columna]) == "factor"){
+    # Por defecto se mostrará un gráfico de barras.
+    plot(NODS[,columna], 
+         col = rainbow(length(levels(NODS[,columna]))),
+         las = 1,
+         main = paste("Diagrama de barras de: ", colnames(NODS[columna])))
+  } else {
+    # Para las variables numéricas, histograma.
+    hist(NODS[, columna], 
+         border = "black", 
+         col = "orange", 
+         las = 1, 
+         main = paste("Histograma de: ", colnames(NODS[columna])),
+         xlab  = colnames(NODS[columna]))
+  }
+}
+```
+
+```{r}
+NODS$COUNTRY[NODS$EPI < 26]
+
+NODS$COUNTRY[NODS$BIO > 20]
+
+
+
+```
+
