@@ -1,4 +1,4 @@
-# EDA-Indicadores-compuestos
+# Exploratory analysys: Composite Indicators
 
 Exploratory analysis of composite indicators related to Agenda 2030 and the SDGs
 
