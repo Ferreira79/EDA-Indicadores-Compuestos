@@ -1,4 +1,4 @@
-# Exploratory analysys: Composite Indicators
+# Exploratory analysys: Composite Indexes
 
 Exploratory analysis of composite indicators related to Agenda 2030 and the SDGs
 
