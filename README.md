@@ -27,3 +27,6 @@ The chosen indicators are the following:
 **SPI – Social Progress Index**
 
 **WRI - World Risk Index**
+
+
+*.R linguist-language=R
