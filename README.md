@@ -29,4 +29,4 @@ The chosen indicators are the following:
 **WRI - World Risk Index**
 
 
-*.R linguist-language=R
+
